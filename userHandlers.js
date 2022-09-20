@@ -37,7 +37,7 @@ const postUser = (req, res) => {
     
     database
     .query(
-      "INSERT INTO users(title, director, year, color, duration) VALUES (?, ?, ?, ?, ?)",
+      "INSERT INTO users(firstname, lastname, email, city, language) VALUES (?, ?, ?, ?, ?)",
       [firstname, lastname, email, city, language]
     )
     .then(([result]) => {
@@ -51,12 +51,12 @@ const postUser = (req, res) => {
 
 const updateUser = (req, res) => {
   const id = parseInt(req.params.id)
-  const { title, director, year, color, duration } = req.body
+  const { firstname, lastname, email, city, language } = req.body
 
   database
     .query(
-      'update users set title = ?, director = ?, year = ?, color = ?, duration = ? where id = ?',
-      [title, director, year, color, duration, id]
+      'update users set title = ?, firstname = ?, lastname = ?, email = ?, city = ? where id = ?',
+      [firstname, lastname, email, city, language]
     )
     .then(([result]) => {
       if (result.affectedRows === 0) {
