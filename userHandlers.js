@@ -1,11 +1,54 @@
+// const { response } = require("express");
 const database = require("./database");
 
 const getUsers = (req, res) => {
+  const initialSql = 
+  "select firstname, lastname, email, city, language from users";
+  
+  const where = []
+
+  if (req.query.language != null) {
+    where.push({
+      column: "language",
+      value: req.query.language,
+      operator: "=",
+    });
+  }
+  if (req.query.city != null) {
+    where.push({
+      column: "city",
+      values: req.query.city,
+      operator: "=",
+    });
+  }
+
+  const newQuery = where.reduce(
+    (sql, { column, operator }, index) =>
+    `${sql} ${index === 0 ? "where" : "and"} ${column} ${operator} ?`,
+    initialSql
+  );
+
+  
+  const array = where.map(({ values }) => values); // const array = where.map((obj) => obj .values);
+      
+
+  console.log("QUERY QUERY", newQuery); 
+  console.log("aray aray", array); 
+
     database
-    .query("select * from users")
+    .query(
+      where.reduce(
+        (sql, { column, operator }, index) =>
+        `${sql} ${index === 0 ? "where" : "and"} ${column} ${operator} ?`,
+        initialSql
+      ),
+      where.map(({ values }) => values)
+    )
     .then(([users]) => {
-    res.status(200).json(users);
+      console.log ("1234662", users)
+      res.status(200).json(users);
   })
+
     .catch((err) => {
     console.error(err);
     res.status(500).send("Error retrieving data from database");
@@ -90,6 +133,7 @@ const deleteUser = (req, res) => {
         res.status(500).send('Error editing the movie')
       })
     }
+
 
   module.exports = {
     getUsers,
